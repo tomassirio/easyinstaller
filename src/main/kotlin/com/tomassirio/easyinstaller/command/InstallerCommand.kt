@@ -10,12 +10,12 @@ class InstallerCommand(
     private val packetManagerStep: PacketManagerStep,
 ) {
 
-    @Command(command = ["-q", "--quick"], description = "Quick install preferred applications")
+    @Command(command = ["-q"], alias = ["--quick"], description = "Quick install preferred applications")
     fun quickInstall() {
         installerService.installAllInOrder()
     }
 
-    @Command(command = ["-m", "--manual"], description = "Install applications manually")
+    @Command(command = ["-m"], alias = ["--manual"], description = "Install applications manually")
     fun installManually() {
         packetManagerStep.execute()
     }

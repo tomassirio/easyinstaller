@@ -7,7 +7,9 @@ import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.context.ApplicationContext
 import org.springframework.shell.component.flow.ComponentFlow
 import org.springframework.shell.component.flow.SelectItem
+import org.springframework.stereotype.Component
 
+@Component
 class PacketManagerStep(
     private val componentFlowBuilder: ComponentFlow.Builder,
     private val applicationContext: ApplicationContext,
