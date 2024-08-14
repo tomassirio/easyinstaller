@@ -10,7 +10,9 @@ class PromptProvider: PromptProvider {
     override fun getPrompt(): AttributedString {
         return AttributedString(
             "EASY-INSTALLER:>",
-            AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE)
+            AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)
+                .blinkDefault()
+                .bold()
         )
     }
 }

@@ -2,6 +2,6 @@ package com.tomassirio.easyinstaller.service.annotation
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class PacketManager(
+annotation class CommunicationTool(
     val enabled: Boolean = true
 )

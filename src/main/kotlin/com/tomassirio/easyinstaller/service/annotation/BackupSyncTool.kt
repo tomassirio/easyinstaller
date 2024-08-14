@@ -2,6 +2,6 @@ package com.tomassirio.easyinstaller.service.annotation
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Ide(
+annotation class BackupSyncTool(
     val enabled: Boolean = true
 )

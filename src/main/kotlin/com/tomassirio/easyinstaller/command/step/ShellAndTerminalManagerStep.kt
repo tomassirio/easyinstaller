@@ -1,7 +1,7 @@
 package com.tomassirio.easyinstaller.command.step
 
-import com.tomassirio.easyinstaller.service.annotation.PacketManager
 import com.tomassirio.easyinstaller.service.ApplicationInstallerService
+import com.tomassirio.easyinstaller.service.annotation.ShellAndTerminalManager
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.context.ApplicationContext
 import org.springframework.shell.component.flow.ComponentFlow
@@ -9,18 +9,18 @@ import org.springframework.shell.component.flow.SelectItem
 import org.springframework.stereotype.Component
 
 @Component
-class PacketManagerStep(
+class ShellAndTerminalManagerStep(
     private val componentFlowBuilder: ComponentFlow.Builder,
-    override val applicationContext: ApplicationContext,
+    applicationContext: ApplicationContext,
     private val applicationInstallerService: ApplicationInstallerService,
     private val shellFormatter: ShellFormatter
 ) : BaseStep(applicationContext), InstallationStep{
 
-    override fun execute() {
+    override fun execute(packageName: String?): String? {
         val flow = componentFlowBuilder.clone().reset()
             .withMultiItemSelector("selectedApps")
             .name("Select Applications to Install")
-            .selectItems(getInstallers<PacketManager>().map { app ->
+            .selectItems(getInstallers<ShellAndTerminalManager>().map { app ->
                 SelectItem.of(app.name(), app.name())
             })
             .and()
@@ -33,11 +33,11 @@ class PacketManagerStep(
         selectedNames.forEach { name ->
             shellFormatter.printWarning("Application $name is going to be installed")
             try {
-                applicationInstallerService.installApplication(name)
-                shellFormatter.printSuccess("Application $name installed successfully")
+                applicationInstallerService.installApplication(name, packageName)
             } catch (e: IllegalArgumentException) {
                 shellFormatter.printError("Application $name not found")
             }
         }
+        return null
     }
 }

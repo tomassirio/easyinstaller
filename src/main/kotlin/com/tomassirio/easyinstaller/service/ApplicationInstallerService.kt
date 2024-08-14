@@ -14,10 +14,10 @@ class ApplicationInstallerService(
 
     fun listApplications() = applications.map { it.name() }
 
-    fun installApplication(name: String) {
+    fun installApplication(name: String, packageManager: String? = null) {
         val app = applications.find { it.name() == name }
         if (app != null) {
-            app.install()
+            app.install(packageManager)
         } else {
             throw IllegalArgumentException("Application $name not found")
         }

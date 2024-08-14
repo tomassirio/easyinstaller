@@ -9,16 +9,19 @@ import org.springframework.stereotype.Component
 @Component
 class ShellFormatter(val terminal: Terminal) {
     @Value("\${shell.out.info}")
-    var infoColor: String? = null
+    lateinit var infoColor: String
 
     @Value("\${shell.out.success}")
-    var successColor: String? = null
+    lateinit var successColor: String
 
     @Value("\${shell.out.warning}")
-    var warningColor: String? = null
+    lateinit var warningColor: String
 
     @Value("\${shell.out.error}")
-    var errorColor: String? = null
+    lateinit var errorColor: String
+
+    @Value("\${shell.out.output}")
+    lateinit var outputColor: String
 
     fun getColored(message: String?, color: PromptColor): String {
         return AttributedStringBuilder().append(
@@ -32,19 +35,23 @@ class ShellFormatter(val terminal: Terminal) {
     }
 
     fun printSuccess(message: String?) {
-        print(message, PromptColor.valueOf(successColor!!))
+        print(message, PromptColor.valueOf(successColor))
     }
 
     fun printInfo(message: String?) {
-        print(message, PromptColor.valueOf(infoColor!!))
+        print(message, PromptColor.valueOf(infoColor))
     }
 
     fun printWarning(message: String?) {
-        print(message, PromptColor.valueOf(warningColor!!))
+        print(message, PromptColor.valueOf(warningColor))
     }
 
     fun printError(message: String?) {
-        print(message, PromptColor.valueOf(errorColor!!))
+        print(message, PromptColor.valueOf(errorColor))
+    }
+
+    fun printOutput(message: String?) {
+        print(message, PromptColor.valueOf(outputColor))
     }
 
     fun print(message: String?, color: PromptColor?) {

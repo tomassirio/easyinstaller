@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 
 @ExtendWith(MockitoExtension::class)
-class BrewInstallerTest {
+class ZshInstallerTest {
 
     @Mock
     private lateinit var shellFormatter: ShellFormatter
@@ -22,11 +22,11 @@ class BrewInstallerTest {
     private lateinit var strategyFactory: StrategyFactory
 
     @InjectMocks
-    private lateinit var brewInstaller: BrewInstaller
+    private lateinit var zshInstaller: ZshInstaller
 
     @BeforeEach
     fun setUp() {
-        ReflectionTestUtils.setField(brewInstaller, "DEFAULT_COMMAND", "sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash")
+        ReflectionTestUtils.setField(zshInstaller, "DEFAULT_COMMAND", "sudo apt-get install zsh")
     }
 
     @Test
@@ -34,10 +34,10 @@ class BrewInstallerTest {
         val strategy: (String) -> Unit = mock()
         `when`(strategyFactory.getStrategy(null)).thenReturn(strategy)
 
-        brewInstaller.install(null)
+        zshInstaller.install(null)
 
-        verify(shellFormatter).printInfo("Installing Brew...")
-        verify(strategy).invoke("sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash")
+        verify(shellFormatter).printInfo("Installing Zsh...")
+        verify(strategy).invoke("sudo apt-get install zsh")
     }
 
     @Test
@@ -45,10 +45,10 @@ class BrewInstallerTest {
         val strategy: (String) -> Unit = mock()
         `when`(strategyFactory.getStrategy("custom")).thenReturn(strategy)
 
-        brewInstaller.install("custom")
+        zshInstaller.install("custom")
 
-        verify(shellFormatter).printInfo("Installing Brew...")
-        verify(strategy).invoke("brew")
+        verify(shellFormatter).printInfo("Installing Zsh...")
+        verify(strategy).invoke("Zsh")
     }
 
     @Test
@@ -58,9 +58,9 @@ class BrewInstallerTest {
         doThrow(RuntimeException("Test exception")).`when`(strategy).invoke(anyString())
 
         assertThrows<RuntimeException> {
-            brewInstaller.install(null)
+            zshInstaller.install(null)
         }
 
-        verify(shellFormatter).printInfo("Installing Brew...")
+        verify(shellFormatter).printInfo("Installing Zsh...")
     }
 }

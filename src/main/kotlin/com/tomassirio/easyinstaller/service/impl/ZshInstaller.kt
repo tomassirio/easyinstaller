@@ -1,17 +1,27 @@
 package com.tomassirio.easyinstaller.service.impl
 
-import com.tomassirio.easyinstaller.service.annotation.ShellProvider
+import com.tomassirio.easyinstaller.service.annotation.ShellAndTerminalManager
 import com.tomassirio.easyinstaller.service.InstallableApplication
+import com.tomassirio.easyinstaller.service.impl.strategy.StrategyFactory
 import com.tomassirio.easyinstaller.style.ShellFormatter
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-@ShellProvider
-class ZshInstaller(private val shellFormatter: ShellFormatter): InstallableApplication {
-    override fun install() {
-        shellFormatter.printInfo("Installing Zsh...")
-        // Shell command to install Zsh could go here
-    }
+@ShellAndTerminalManager
+class ZshInstaller(
+    private val shellFormatter: ShellFormatter,
+    private val strategyFactory: StrategyFactory
+): InstallableApplication {
 
+    @Value("\${command.default.zsh}")
+    lateinit var DEFAULT_COMMAND: String
+
+    override fun install(packageManager: String?) {
+        shellFormatter.printInfo("Installing ${name()}...")
+        val strategy = strategyFactory.getStrategy(packageManager)
+        val command = if (packageManager.isNullOrEmpty()) DEFAULT_COMMAND else name()
+        strategy(command)
+    }
     override fun name() = "Zsh"
 }
