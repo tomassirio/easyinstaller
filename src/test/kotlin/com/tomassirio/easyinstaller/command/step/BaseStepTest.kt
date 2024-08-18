@@ -4,9 +4,9 @@ import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.service.annotation.PackageManager
 import com.tomassirio.easyinstaller.service.annotation.ShellAndTerminalManager
 import com.tomassirio.easyinstaller.service.annotation.VersionControlSystem
-import com.tomassirio.easyinstaller.service.impl.BrewInstaller
-import com.tomassirio.easyinstaller.service.impl.GitInstaller
-import com.tomassirio.easyinstaller.service.impl.ZshInstaller
+import com.tomassirio.easyinstaller.service.impl.installer.BrewInstaller
+import com.tomassirio.easyinstaller.service.impl.installer.GitInstaller
+import com.tomassirio.easyinstaller.service.impl.installer.ZshInstaller
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

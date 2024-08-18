@@ -1,4 +1,4 @@
-package com.tomassirio.easyinstaller.service.impl.strategy.decorator
+package com.tomassirio.easyinstaller.service.impl.installer.strategy.decorator
 
 import org.springframework.stereotype.Component
 

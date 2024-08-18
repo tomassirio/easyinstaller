@@ -1,8 +1,8 @@
-package com.tomassirio.easyinstaller.service.impl
+package com.tomassirio.easyinstaller.service.impl.installer
 
-import com.tomassirio.easyinstaller.service.impl.strategy.BrewStrategy
-import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategy
-import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategyContext
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.BrewStrategy
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategy
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

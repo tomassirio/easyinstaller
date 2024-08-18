@@ -1,6 +1,6 @@
-package com.tomassirio.easyinstaller.service.impl.strategy
+package com.tomassirio.easyinstaller.service.impl.installer.strategy
 
-import com.tomassirio.easyinstaller.service.process.ProcessBuilderFactory
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.process.ProcessBuilderFactory
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -10,7 +10,7 @@ abstract class BaseStrategy(
     private val processBuilderFactory: ProcessBuilderFactory
 ) {
 
-    protected fun process(command: String) {
+    fun process(command: String) {
         shellFormatter.printInfo("With commands: $command...")
 
         runCatching {

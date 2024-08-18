@@ -1,7 +1,7 @@
 package com.tomassirio.easyinstaller.command.step
 
 import com.tomassirio.easyinstaller.service.ApplicationInstallerService
-import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategyContext
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

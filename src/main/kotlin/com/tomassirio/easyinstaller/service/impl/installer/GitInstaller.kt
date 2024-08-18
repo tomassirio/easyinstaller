@@ -1,20 +1,22 @@
-package com.tomassirio.easyinstaller.service.impl
+package com.tomassirio.easyinstaller.service.impl.installer
 
-import com.tomassirio.easyinstaller.service.annotation.ShellAndTerminalManager
 import com.tomassirio.easyinstaller.service.InstallableApplication
-import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategyContext
+import com.tomassirio.easyinstaller.service.annotation.VersionControlSystem
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
 @Service
-@ShellAndTerminalManager
-class ZshInstaller(
+@VersionControlSystem
+@ConditionalOnProperty
+class GitInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext
-): InstallableApplication {
+) : InstallableApplication {
 
-    @Value("\${command.default.zsh}")
+    @Value("\${command.default.git}")
     lateinit var DEFAULT_COMMAND: String
 
     override fun install() {
@@ -23,6 +25,5 @@ class ZshInstaller(
         val command = if (downloadStrategyContext.isDefault()) DEFAULT_COMMAND else name().lowercase()
         strategy(command)
     }
-
-    override fun name() = "Zsh"
+    override fun name() = "Git"
 }

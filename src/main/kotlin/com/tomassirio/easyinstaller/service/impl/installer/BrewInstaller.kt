@@ -1,8 +1,8 @@
-package com.tomassirio.easyinstaller.service.impl
+package com.tomassirio.easyinstaller.service.impl.installer
 
 import com.tomassirio.easyinstaller.service.annotation.PackageManager
 import com.tomassirio.easyinstaller.service.InstallableApplication
-import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategyContext
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile

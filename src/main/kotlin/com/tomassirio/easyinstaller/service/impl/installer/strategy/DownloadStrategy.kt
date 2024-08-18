@@ -1,4 +1,4 @@
-package com.tomassirio.easyinstaller.service.impl.strategy
+package com.tomassirio.easyinstaller.service.impl.installer.strategy
 
 interface DownloadStrategy {
     fun install(urlOrName: String)

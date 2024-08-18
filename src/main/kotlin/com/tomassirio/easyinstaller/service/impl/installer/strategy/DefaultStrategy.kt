@@ -1,7 +1,7 @@
-package com.tomassirio.easyinstaller.service.impl.strategy
+package com.tomassirio.easyinstaller.service.impl.installer.strategy
 
-import com.tomassirio.easyinstaller.service.impl.strategy.decorator.SudoDecorator
-import com.tomassirio.easyinstaller.service.process.ProcessBuilderFactory
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.decorator.SudoDecorator
+import com.tomassirio.easyinstaller.service.impl.installer.strategy.process.ProcessBuilderFactory
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.stereotype.Component
 

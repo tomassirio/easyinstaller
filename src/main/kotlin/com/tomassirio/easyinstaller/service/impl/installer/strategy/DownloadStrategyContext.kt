@@ -1,4 +1,4 @@
-package com.tomassirio.easyinstaller.service.impl.strategy
+package com.tomassirio.easyinstaller.service.impl.installer.strategy
 
 import com.tomassirio.easyinstaller.exception.StrategyNotFoundException
 import org.springframework.stereotype.Component

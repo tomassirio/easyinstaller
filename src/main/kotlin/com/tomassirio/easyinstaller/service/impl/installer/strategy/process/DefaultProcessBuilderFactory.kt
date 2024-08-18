@@ -1,4 +1,4 @@
-package com.tomassirio.easyinstaller.service.process
+package com.tomassirio.easyinstaller.service.impl.installer.strategy.process
 
 import org.springframework.stereotype.Component
 

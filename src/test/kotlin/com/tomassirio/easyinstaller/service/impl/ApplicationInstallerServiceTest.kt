@@ -1,5 +1,7 @@
-package com.tomassirio.easyinstaller.service
+package com.tomassirio.easyinstaller.service.impl
 
+import com.tomassirio.easyinstaller.service.ApplicationInstallerService
+import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,7 +32,7 @@ class ApplicationInstallerServiceTest {
         `when`(installableApp1.name()).thenReturn("App1")
         `when`(installableApp2.name()).thenReturn("App2")
         appList = listOf(installableApp1, installableApp2)
-        applicationInstallerService = ApplicationInstallerService(appList)
+        applicationInstallerService = ApplicationInstallerServiceImpl(appList)
     }
 
     @Test
