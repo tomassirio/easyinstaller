@@ -2,9 +2,11 @@ package com.tomassirio.easyinstaller.service.impl.strategy
 
 import com.tomassirio.easyinstaller.service.process.ProcessBuilderFactory
 import com.tomassirio.easyinstaller.style.ShellFormatter
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("mac")
 class BrewStrategy(
     shellFormatter: ShellFormatter,
     processBuilderFactory: ProcessBuilderFactory
@@ -12,5 +14,9 @@ class BrewStrategy(
 
     override fun install(urlOrName: String) {
         super.process("brew install $urlOrName")
+    }
+
+    override fun name(): String {
+        return "brew"
     }
 }

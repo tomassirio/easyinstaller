@@ -4,6 +4,7 @@ import com.tomassirio.easyinstaller.command.step.PackageManagerStep
 import com.tomassirio.easyinstaller.command.step.ShellAndTerminalManagerStep
 import com.tomassirio.easyinstaller.command.step.VersionControlSystemStep
 import com.tomassirio.easyinstaller.service.ApplicationInstallerService
+import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -25,6 +26,9 @@ class InstallerCommandTest {
 
     @Mock
     private lateinit var shellAndTerminalManagerStep: ShellAndTerminalManagerStep
+
+    @Mock
+    private lateinit var shellFormatter: ShellFormatter
 
     @InjectMocks
     private lateinit var installerCommand: InstallerCommand

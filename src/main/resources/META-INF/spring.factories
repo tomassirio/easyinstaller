@@ -1,0 +1,2 @@
+# src/main/resources/META-INF/spring.factories
+org.springframework.boot.env.EnvironmentPostProcessor= com.tomassirio.easyinstaller.config.OsBasedProfileActivator

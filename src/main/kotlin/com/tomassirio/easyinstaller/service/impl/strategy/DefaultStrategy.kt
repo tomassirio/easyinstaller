@@ -16,4 +16,8 @@ class DefaultStrategy(
         sudoDecorator.decorate(urlOrName)
             .let(::process)
     }
+
+    override fun name(): String {
+        return "default"
+    }
 }

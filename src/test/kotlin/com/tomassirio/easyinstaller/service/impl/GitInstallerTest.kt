@@ -1,6 +1,8 @@
 package com.tomassirio.easyinstaller.service.impl
 
-import com.tomassirio.easyinstaller.service.impl.strategy.StrategyFactory
+import com.tomassirio.easyinstaller.service.impl.strategy.BrewStrategy
+import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategy
+import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,46 +21,50 @@ class GitInstallerTest {
     private lateinit var shellFormatter: ShellFormatter
 
     @Mock
-    private lateinit var strategyFactory: StrategyFactory
+    private lateinit var downloadStrategyContext: DownloadStrategyContext
 
     @InjectMocks
     private lateinit var gitInstaller: GitInstaller
 
+    private val DEFAULT_COMMAND = "DEFAULT_COMMAND"
+
     @BeforeEach
     fun setUp() {
-        ReflectionTestUtils.setField(gitInstaller, "DEFAULT_COMMAND", "sudo apt-get install git")
+        ReflectionTestUtils.setField(gitInstaller, DEFAULT_COMMAND, DEFAULT_COMMAND)
     }
 
     @Test
     fun `test successful installation with default command`() {
         val strategy: (String) -> Unit = mock()
-        `when`(strategyFactory.getStrategy(null)).thenReturn(strategy)
+        `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
+        `when`(downloadStrategyContext.isDefault()).thenReturn(true)
 
-        gitInstaller.install(null)
+        gitInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Git...")
-        verify(strategy).invoke("sudo apt-get install git")
+        verify(strategy).invoke(DEFAULT_COMMAND)
     }
 
     @Test
     fun `test successful installation with provided package manager`() {
-        val strategy: (String) -> Unit = mock()
-        `when`(strategyFactory.getStrategy("custom")).thenReturn(strategy)
+        val strategy: DownloadStrategy = mock(BrewStrategy::class.java)
 
-        gitInstaller.install("custom")
+        `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy::install)
+        gitInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Git...")
-        verify(strategy).invoke("Git")
+        verify(strategy).install("git")
     }
 
     @Test
     fun `test exception handling during installation`() {
         val strategy: (String) -> Unit = mock()
-        `when`(strategyFactory.getStrategy(null)).thenReturn(strategy)
+        `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
         doThrow(RuntimeException("Test exception")).`when`(strategy).invoke(anyString())
 
+
         assertThrows<RuntimeException> {
-            gitInstaller.install(null)
+            gitInstaller.install()
         }
 
         verify(shellFormatter).printInfo("Installing Git...")

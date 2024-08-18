@@ -1,6 +1,8 @@
 package com.tomassirio.easyinstaller.service.impl
 
-import com.tomassirio.easyinstaller.service.impl.strategy.StrategyFactory
+import com.tomassirio.easyinstaller.service.impl.strategy.BrewStrategy
+import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategy
+import com.tomassirio.easyinstaller.service.impl.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,46 +21,50 @@ class BrewInstallerTest {
     private lateinit var shellFormatter: ShellFormatter
 
     @Mock
-    private lateinit var strategyFactory: StrategyFactory
+    private lateinit var downloadStrategyContext: DownloadStrategyContext
 
     @InjectMocks
     private lateinit var brewInstaller: BrewInstaller
 
+    private val DEFAULT_COMMAND = "DEFAULT_COMMAND"
+
     @BeforeEach
     fun setUp() {
-        ReflectionTestUtils.setField(brewInstaller, "DEFAULT_COMMAND", "sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash")
+        ReflectionTestUtils.setField(brewInstaller, DEFAULT_COMMAND, DEFAULT_COMMAND)
     }
 
     @Test
     fun `test successful installation with default command`() {
         val strategy: (String) -> Unit = mock()
-        `when`(strategyFactory.getStrategy(null)).thenReturn(strategy)
+        `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
+        `when`(downloadStrategyContext.isDefault()).thenReturn(true)
 
-        brewInstaller.install(null)
+        brewInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Brew...")
-        verify(strategy).invoke("sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash")
+        verify(strategy).invoke(DEFAULT_COMMAND)
     }
 
     @Test
     fun `test successful installation with provided package manager`() {
-        val strategy: (String) -> Unit = mock()
-        `when`(strategyFactory.getStrategy("custom")).thenReturn(strategy)
+        val strategy: DownloadStrategy = mock(BrewStrategy::class.java)
 
-        brewInstaller.install("custom")
+        `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy::install)
+
+        brewInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Brew...")
-        verify(strategy).invoke("brew")
+        verify(strategy).install("brew")
     }
 
     @Test
     fun `test exception handling during installation`() {
         val strategy: (String) -> Unit = mock()
-        `when`(strategyFactory.getStrategy(null)).thenReturn(strategy)
+        `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
         doThrow(RuntimeException("Test exception")).`when`(strategy).invoke(anyString())
 
         assertThrows<RuntimeException> {
-            brewInstaller.install(null)
+            brewInstaller.install()
         }
 
         verify(shellFormatter).printInfo("Installing Brew...")
