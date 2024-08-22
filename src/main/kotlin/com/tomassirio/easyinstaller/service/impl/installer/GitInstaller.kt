@@ -5,12 +5,10 @@ import com.tomassirio.easyinstaller.service.annotation.VersionControlSystem
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
 @Service
 @VersionControlSystem
-@ConditionalOnProperty
 class GitInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext

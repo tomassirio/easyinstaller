@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service
 
 @Service
 @PackageManager
-@Profile("mac")
-class BrewInstaller(
+@Profile("Linux", "Debian")
+class AptInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext
 ) : InstallableApplication {
 
-   @Value("\${command.default.brew}")
+   @Value("\${command.default.apt}")
    lateinit var DEFAULT_COMMAND: String
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
@@ -25,5 +25,5 @@ class BrewInstaller(
         strategy(command)
     }
 
-    override fun name() = "Brew"
+    override fun name() = "Apt"
 }

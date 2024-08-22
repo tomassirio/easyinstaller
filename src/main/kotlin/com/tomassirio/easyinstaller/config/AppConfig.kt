@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Lazy
 
 @Configuration
 class AppConfig(@Lazy private val terminal: Terminal) {
+
     @Bean
     fun shellFormatter(): ShellFormatter {
         return ShellFormatter(terminal)

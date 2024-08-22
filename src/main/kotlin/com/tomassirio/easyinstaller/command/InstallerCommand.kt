@@ -1,8 +1,6 @@
 package com.tomassirio.easyinstaller.command
 
-import com.tomassirio.easyinstaller.command.step.PackageManagerStep
-import com.tomassirio.easyinstaller.command.step.ShellAndTerminalManagerStep
-import com.tomassirio.easyinstaller.command.step.VersionControlSystemStep
+import com.tomassirio.easyinstaller.command.step.*
 import com.tomassirio.easyinstaller.service.ApplicationInstallerService
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.shell.command.annotation.Command
@@ -13,6 +11,16 @@ class InstallerCommand(
     private val packageManagerStep: PackageManagerStep,
     private val shellAndTerminalManagerStep: ShellAndTerminalManagerStep,
     private val versionControlSystemStep: VersionControlSystemStep,
+    private val commandLineToolStep: CommandLineToolStep,
+    private val programmingLanguageToolStep: ProgrammingLanguageToolStep,
+    private val databaseToolStep: DatabaseToolStep,
+    private val containersAndVirtualizationStep: ContainerAndVirtualizationToolStep,
+    private val cloudCLIToolsStep: CloudCliToolStep,
+    private val securityToolsStep: SecurityToolStep,
+    private val communicationToolStep: CommunicationToolStep,
+    private val documentationToolsStep: DocumentationToolStep,
+    private val buildAndCICDToolsStep: BuildAndCiCdToolStep,
+    private val backupAndSyncToolsStep: BackupSyncToolStep,
     private val shellFormatter: ShellFormatter
 ) {
 
@@ -23,13 +31,22 @@ class InstallerCommand(
 
     @Command(command = ["-m"], alias = ["--manual"], description = "Install applications manually")
     fun installManually() {
+        // Run Package Manager First and set default package manager
         packageManagerStep.execute()
-        val shellAndTerminalApps = shellAndTerminalManagerStep.execute()
-        val versionControlSystemApps = versionControlSystemStep.execute()
 
         listOf(
-            shellAndTerminalApps,
-            versionControlSystemApps
+            shellAndTerminalManagerStep.execute(),
+            versionControlSystemStep.execute(),
+            commandLineToolStep.execute(),
+            programmingLanguageToolStep.execute(),
+            databaseToolStep.execute(),
+            containersAndVirtualizationStep.execute(),
+            cloudCLIToolsStep.execute(),
+            securityToolsStep.execute(),
+            communicationToolStep.execute(),
+            documentationToolsStep.execute(),
+            buildAndCICDToolsStep.execute(),
+            backupAndSyncToolsStep.execute()
         )
             .flatten()
             .forEach {

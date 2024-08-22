@@ -1,8 +1,6 @@
 package com.tomassirio.easyinstaller.command
 
-import com.tomassirio.easyinstaller.command.step.PackageManagerStep
-import com.tomassirio.easyinstaller.command.step.ShellAndTerminalManagerStep
-import com.tomassirio.easyinstaller.command.step.VersionControlSystemStep
+import com.tomassirio.easyinstaller.command.step.*
 import com.tomassirio.easyinstaller.service.ApplicationInstallerService
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.Test
@@ -26,6 +24,36 @@ class InstallerCommandTest {
 
     @Mock
     private lateinit var shellAndTerminalManagerStep: ShellAndTerminalManagerStep
+
+    @Mock
+    private lateinit var commandLineToolStep: CommandLineToolStep
+
+    @Mock
+    private lateinit var programmingLanguageToolStep: ProgrammingLanguageToolStep
+
+    @Mock
+    private lateinit var databaseToolStep: DatabaseToolStep
+
+    @Mock
+    private lateinit var containersAndVirtualizationStep: ContainerAndVirtualizationToolStep
+
+    @Mock
+    private lateinit var cloudCLIToolsStep: CloudCliToolStep
+
+    @Mock
+    private lateinit var securityToolsStep: SecurityToolStep
+
+    @Mock
+    private lateinit var communicationToolStep: CommunicationToolStep
+
+    @Mock
+    private lateinit var documentationToolsStep: DocumentationToolStep
+
+    @Mock
+    private lateinit var buildAndCICDToolsStep: BuildAndCiCdToolStep
+
+    @Mock
+    private lateinit var backupAndSyncToolsStep: BackupSyncToolStep
 
     @Mock
     private lateinit var shellFormatter: ShellFormatter

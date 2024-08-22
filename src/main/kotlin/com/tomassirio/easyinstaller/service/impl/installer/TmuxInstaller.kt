@@ -1,23 +1,22 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
 import com.tomassirio.easyinstaller.service.InstallableApplication
-import com.tomassirio.easyinstaller.service.annotation.PackageManager
+import com.tomassirio.easyinstaller.service.annotation.CommandLineTool
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@PackageManager
-@Profile("mac")
-class BrewInstaller(
+@CommandLineTool
+class TmuxInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext
-) : InstallableApplication {
+): InstallableApplication {
 
-   @Value("\${command.default.brew}")
-   lateinit var DEFAULT_COMMAND: String
+    @Value("\${command.default.tmux}")
+    lateinit var DEFAULT_COMMAND: String
+
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
         val strategy = downloadStrategyContext.getCurrentStrategy()
@@ -25,5 +24,5 @@ class BrewInstaller(
         strategy(command)
     }
 
-    override fun name() = "Brew"
+    override fun name() = "Tmux"
 }

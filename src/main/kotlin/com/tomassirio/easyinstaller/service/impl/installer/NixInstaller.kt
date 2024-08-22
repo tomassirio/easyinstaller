@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service
 @Service
 @PackageManager
 @Profile("mac")
-class BrewInstaller(
+class NixInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext
 ) : InstallableApplication {
 
-   @Value("\${command.default.brew}")
+   @Value("\${command.default.nix}")
    lateinit var DEFAULT_COMMAND: String
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
@@ -25,5 +25,5 @@ class BrewInstaller(
         strategy(command)
     }
 
-    override fun name() = "Brew"
+    override fun name() = "Nix"
 }

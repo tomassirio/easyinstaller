@@ -1,6 +1,6 @@
 package com.tomassirio.easyinstaller.service.impl.installer.strategy.decorator
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

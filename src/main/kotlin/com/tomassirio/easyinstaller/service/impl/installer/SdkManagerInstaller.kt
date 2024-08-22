@@ -1,29 +1,30 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
 import com.tomassirio.easyinstaller.service.InstallableApplication
-import com.tomassirio.easyinstaller.service.annotation.PackageManager
+import com.tomassirio.easyinstaller.service.annotation.ProgrammingLanguageTool
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@PackageManager
-@Profile("mac")
-class BrewInstaller(
+@ProgrammingLanguageTool
+class SdkManagerInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext
-) : InstallableApplication {
+): InstallableApplication {
 
-   @Value("\${command.default.brew}")
-   lateinit var DEFAULT_COMMAND: String
+    @Value("\${command.default.sdkman}")
+    lateinit var DEFAULT_COMMAND: String
+
+    private final val alias = "sdkman"
+
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
         val strategy = downloadStrategyContext.getCurrentStrategy()
-        val command = if (downloadStrategyContext.isDefault()) DEFAULT_COMMAND else name().lowercase()
+        val command = if (downloadStrategyContext.isDefault()) DEFAULT_COMMAND else alias
         strategy(command)
     }
 
-    override fun name() = "Brew"
+    override fun name() = "SdkManager"
 }
