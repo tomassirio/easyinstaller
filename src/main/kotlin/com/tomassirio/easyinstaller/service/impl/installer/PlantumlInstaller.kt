@@ -4,7 +4,6 @@ import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.service.annotation.DocumentationTool
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
@@ -14,13 +13,10 @@ class PlantumlInstaller(
     private val downloadStrategyContext: DownloadStrategyContext
 ): InstallableApplication {
 
-    @Value("\${command.default.plantuml}")
-    lateinit var DEFAULT_COMMAND: String
-
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
         val strategy = downloadStrategyContext.getCurrentStrategy()
-        val command = if (downloadStrategyContext.isDefault()) DEFAULT_COMMAND else name().lowercase()
+        val command = if (downloadStrategyContext.isDefault()) null else name().lowercase()
         strategy(command)
     }
 

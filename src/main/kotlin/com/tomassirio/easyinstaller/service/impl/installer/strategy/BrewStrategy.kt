@@ -12,7 +12,7 @@ class BrewStrategy(
     processBuilderFactory: ProcessBuilderFactory
 ) : BaseStrategy(shellFormatter, processBuilderFactory), DownloadStrategy {
 
-    override fun install(urlOrName: String) {
+    override fun install(urlOrName: String?) {
         super.process("brew install $urlOrName")
     }
 

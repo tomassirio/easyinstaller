@@ -14,13 +14,13 @@ class BitwardenCliInstaller(
     private val downloadStrategyContext: DownloadStrategyContext
 ): InstallableApplication {
 
-    @Value("\${command.default.bitwarden_cli}")
-    lateinit var DEFAULT_COMMAND: String
+    @Value("\${url.default.bitwarden_cli}")
+    lateinit var DEFAULT_URL: String
 
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
         val strategy = downloadStrategyContext.getCurrentStrategy()
-        val command = if (downloadStrategyContext.isDefault()) DEFAULT_COMMAND else name().lowercase()
+        val command = if (downloadStrategyContext.isDefault()) DEFAULT_URL else name().lowercase()
         strategy(command)
     }
 

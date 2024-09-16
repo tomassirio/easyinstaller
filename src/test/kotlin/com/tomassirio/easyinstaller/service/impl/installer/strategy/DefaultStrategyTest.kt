@@ -1,6 +1,5 @@
 package com.tomassirio.easyinstaller.service.impl.installer.strategy
 
-import com.tomassirio.easyinstaller.service.impl.installer.strategy.decorator.SudoDecorator
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.process.ProcessBuilderFactory
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -26,8 +25,6 @@ class DefaultStrategyTest {
     private lateinit var processBuilderFactory: ProcessBuilderFactory
     @Mock(strictness = Mock.Strictness.LENIENT)
     private lateinit var process: Process
-    @Mock
-    private lateinit var sudoDecorator: SudoDecorator
 
     @InjectMocks
     private lateinit var defaultStrategy: DefaultStrategy
@@ -46,14 +43,12 @@ class DefaultStrategyTest {
     @Test
     fun `install should call process with correct command after decoration`() {
         val urlOrName = "example"
-        val decoratedCommand = "sudo example"
-        `when`(sudoDecorator.decorate(urlOrName)).thenReturn(decoratedCommand)
 
         defaultStrategy.install(urlOrName)
 
-        verify(sudoDecorator).decorate(urlOrName)
         verify(shellFormatter).printInfo(commandCaptor.capture())
-        assertEquals("With commands: $decoratedCommand...", commandCaptor.value)
+        assertEquals("With commands: $urlOrName...",
+                commandCaptor.value)
     }
 
     @Test

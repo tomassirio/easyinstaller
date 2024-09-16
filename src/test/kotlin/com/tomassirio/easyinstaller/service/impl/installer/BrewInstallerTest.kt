@@ -4,6 +4,8 @@ import com.tomassirio.easyinstaller.service.impl.installer.strategy.BrewStrategy
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategy
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -13,6 +15,9 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
+import java.io.FileInputStream
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 @ExtendWith(MockitoExtension::class)
 class BrewInstallerTest {
@@ -26,23 +31,27 @@ class BrewInstallerTest {
     @InjectMocks
     private lateinit var brewInstaller: BrewInstaller
 
-    private val DEFAULT_COMMAND = "DEFAULT_COMMAND"
+    private val defaultCommandField = "DEFAULT_URL"
 
     @BeforeEach
     fun setUp() {
-        ReflectionTestUtils.setField(brewInstaller, DEFAULT_COMMAND, DEFAULT_COMMAND)
+        val properties = Properties()
+        properties.load(FileInputStream("src/main/resources/application.properties"))
+        val defaultCommand = properties.getProperty("url.default.brew")
+
+        ReflectionTestUtils.setField(brewInstaller, defaultCommandField, defaultCommand)
     }
 
     @Test
     fun `test successful installation with default command`() {
-        val strategy: (String) -> Unit = mock()
+        val strategy: (String?) -> Unit = mock()
         `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
         `when`(downloadStrategyContext.isDefault()).thenReturn(true)
 
         brewInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Brew...")
-        verify(strategy).invoke(DEFAULT_COMMAND)
+        verify(strategy).invoke(brewInstaller.DEFAULT_URL)
     }
 
     @Test
@@ -59,7 +68,7 @@ class BrewInstallerTest {
 
     @Test
     fun `test exception handling during installation`() {
-        val strategy: (String) -> Unit = mock()
+        val strategy: (String?) -> Unit = mock()
         `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
         doThrow(RuntimeException("Test exception")).`when`(strategy).invoke(anyString())
 
@@ -68,5 +77,31 @@ class BrewInstallerTest {
         }
 
         verify(shellFormatter).printInfo("Installing Brew...")
+    }
+
+    @Test
+    fun `test default curl URL is valid`() {
+        // Retrieve the default command automatically
+        val modifiedCommand = "curl --head ${brewInstaller.DEFAULT_URL}"
+        val command = arrayOf("/bin/bash", "-c", modifiedCommand)
+
+        // Start the process
+        val process = ProcessBuilder(*command).start()
+
+        // Add a timeout to avoid hanging indefinitely
+        val exitCode = if (process.waitFor(3, TimeUnit.SECONDS)) {
+            process.exitValue()
+        } else {
+            process.destroy()
+            throw RuntimeException("Process timed out")
+        }
+
+        // Capture both output and error streams
+        val output = process.inputStream.bufferedReader().readText()
+        val errorOutput = process.errorStream.bufferedReader().readText()
+
+        // Assert the process exited successfully and produced expected output
+        assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
+        assertTrue(output.contains("HTTP/2 200"), "Expected output to contain 'HTTP/2 200'. Output was: $output")
     }
 }

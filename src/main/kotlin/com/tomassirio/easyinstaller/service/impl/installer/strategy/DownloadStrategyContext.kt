@@ -9,7 +9,7 @@ class DownloadStrategyContext(
 ) {
     private var currentStrategy: DownloadStrategy = strategies.first { it is DefaultStrategy }
 
-    fun getCurrentStrategy(): (String) -> Unit {
+    fun getCurrentStrategy(): (String?) -> Unit {
         return currentStrategy::install
     }
 

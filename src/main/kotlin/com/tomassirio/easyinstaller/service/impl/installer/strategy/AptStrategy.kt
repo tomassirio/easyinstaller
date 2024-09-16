@@ -12,7 +12,7 @@ class AptStrategy(
     processBuilderFactory: ProcessBuilderFactory
 ) : BaseStrategy(shellFormatter, processBuilderFactory), DownloadStrategy {
 
-    override fun install(urlOrName: String) {
+    override fun install(urlOrName: String?) {
         super.process("apt install -y $urlOrName")
     }
 
