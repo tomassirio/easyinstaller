@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,15 @@ class KubectlInstallerTest {
         kubectlInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Kubectl...")
-        verify(strategy).invoke(kubectlInstaller.DEFAULT_URL)
+        verify(strategy).invoke(    "mkdir -p /tmp/installer-kubectl && " +
+                "cd /tmp/installer-kubectl && " +
+                "curl -fsSL ${kubectlInstaller.DEFAULT_URL} -o kubectl && " +
+                "sudo install -o root -g root -m 0755 && " +
+                "sudo chmod +x kubectl && " +
+                "sudo mv kubectl /usr/local/bin/ && " +
+                "sudo rm kubectl && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-kubectl")
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
+import com.tomassirio.easyinstaller.config.helper.OSArchUtil
 import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.service.annotation.CloudCLITool
 import com.tomassirio.easyinstaller.service.impl.installer.builder.DefaultCommandBuilder
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Service
 @Service
 @CloudCLITool
 class TerraformInstaller(
-    private val shellFormatter: ShellFormatter,
-    private val downloadStrategyContext: DownloadStrategyContext
-): InstallableApplication {
+        private val shellFormatter: ShellFormatter,
+        private val downloadStrategyContext: DownloadStrategyContext,
+        private val osArchUtil: OSArchUtil
+) : InstallableApplication {
 
     @Value("\${url.default.terraform}")
     lateinit var DEFAULT_URL: String
@@ -28,7 +30,16 @@ class TerraformInstaller(
     override fun name() = "Terraform"
 
     private fun createDefaultCommand(): String {
-        return DefaultCommandBuilder(name(), DEFAULT_URL)
+        val os = osArchUtil.getOS()
+                .replace("MacOSX", "darwin")
+                .replace("Windows", "windows")
+                .replace("Linux", "linux")
+        val arch = osArchUtil.getArch()
+                .replace("x86_64", "amd64")
+
+        val finalURL = DEFAULT_URL.replace("{OS}", os).replace("{ARCH}", arch)
+
+        return DefaultCommandBuilder(name(), finalURL)
                 .setFileName("terraform.zip")
                 .setExtractCommand("unzip")
                 .addPostExtractCommands(

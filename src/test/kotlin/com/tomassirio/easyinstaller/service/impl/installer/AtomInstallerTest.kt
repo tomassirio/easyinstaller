@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,13 @@ class AtomInstallerTest {
         atomInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Atom...")
-        verify(strategy).invoke(atomInstaller.DEFAULT_URL)
+        verify(strategy).invoke(
+                "mkdir -p /tmp/installer-atom && " +
+                        "cd /tmp/installer-atom && " +
+                        "curl -fsSL ${atomInstaller.DEFAULT_URL} -o atom.tar.gz && " +
+                        "tar -xzvf atom.tar.gz && " +
+                        "cd - && " +
+                        "rm -rf /tmp/installer-atom")
     }
 
     @Test

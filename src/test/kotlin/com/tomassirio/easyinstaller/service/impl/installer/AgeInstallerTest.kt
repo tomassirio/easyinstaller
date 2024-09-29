@@ -12,7 +12,12 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.matches
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -54,7 +59,7 @@ class AgeInstallerTest {
         verify(strategy).invoke(matches(
                 "mkdir -p /tmp/installer-age && " +
                         "cd /tmp/installer-age && " +
-                        "curl -fsSL https://github\\.com/FiloSottile/age/releases/download/v1\\.2\\.0/age-v1\\.2\\.0-darwin-amd64\\.tar\\.gz -o age-v1\\.2\\.0-darwin-amd64\\.tar\\.gz && " +
+                        "curl -fsSL ${ageInstaller.DEFAULT_URL} -o age-v1\\.2\\.0-darwin-amd64\\.tar\\.gz && " +
                         "tar -xzvf age-v1\\.2\\.0-darwin-amd64\\.tar\\.gz && " +
                         "sudo mv age/age /usr/local/bin/ && " +
                         "sudo mv age/age-keygen /usr/local/bin/ && " +

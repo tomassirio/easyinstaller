@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,18 @@ class TmuxInstallerTest {
         tmuxInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Tmux...")
-        verify(strategy).invoke(tmuxInstaller.DEFAULT_URL)
+        verify(strategy).invoke(    "mkdir -p /tmp/installer-tmux && " +
+                "cd /tmp/installer-tmux && " +
+                "curl -fsSL ${tmuxInstaller.DEFAULT_URL} -o tmux-3.4.tar.gz && " +
+                "tar -xz && " +
+                "sudo cd tmux-3.4 && " +
+                "sudo ./configure && " +
+                "sudo make && " +
+                "sudo make install && " +
+                "sudo cd .. && " +
+                "sudo rm -rf tmux-3.4 && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-tmux")
     }
 
     @Test

@@ -4,17 +4,17 @@ import com.tomassirio.easyinstaller.service.impl.installer.strategy.BrewStrategy
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategy
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
 import com.tomassirio.easyinstaller.style.ShellFormatter
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.test.util.ReflectionTestUtils
-import java.io.FileInputStream
-import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class ZoomInstallerTest {
@@ -27,17 +27,6 @@ class ZoomInstallerTest {
 
     @InjectMocks
     private lateinit var zoomInstaller: ZoomInstaller
-
-    private val defaultCommandField = "DEFAULT_URL"
-
-    @BeforeEach
-    fun setUp() {
-        val properties = Properties()
-        properties.load(FileInputStream("src/main/resources/application.properties"))
-        val defaultCommand = properties.getProperty("url.default.zoom")
-
-        ReflectionTestUtils.setField(zoomInstaller, defaultCommandField, defaultCommand)
-    }
 
     @Test
     fun `test successful installation with provided package manager`() {

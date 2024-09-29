@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,7 @@ class AzureCliInstallerTest {
         azureCliInstaller.install()
 
         verify(shellFormatter).printInfo("Installing AzureCli...")
-        verify(strategy).invoke(azureCliInstaller.DEFAULT_URL)
+        verify(strategy).invoke("curl -fsSL ${azureCliInstaller.DEFAULT_URL} | sudo bash")
     }
 
     @Test
@@ -103,6 +107,6 @@ class AzureCliInstallerTest {
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
         assertTrue(output.contains("HTTP/1.1 200 OK")
-                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
+                .or(output.contains("HTTP/1.1 301")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
     }
 }

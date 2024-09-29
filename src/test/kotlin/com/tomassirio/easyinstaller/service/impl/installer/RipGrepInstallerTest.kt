@@ -12,7 +12,12 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.matches
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -52,15 +57,15 @@ class RipGrepInstallerTest {
 
         verify(shellFormatter).printInfo("Installing RipGrep...")
         verify(strategy).invoke(matches(
-                "mkdir -p /tmp/installer-[a-f0-9-]+ && " +
-                        "cd /tmp/installer-[a-f0-9-]+ && " +
-                        "curl -fsSL https://github\\.com/BurntSushi/ripgrep/releases/download/14\\.0\\.3/ripgrep-14\\.0\\.3-x86_64-unknown-linux-musl\\.tar\\.gz -o ripgrep-14\\.0\\.3-x86_64-unknown-linux-musl\\.tar\\.gz && " +
+                "mkdir -p /tmp/installer-ripgrep && " +
+                        "cd /tmp/installer-ripgrep && " +
+                        "curl -fsSL ${ripGrepInstaller.DEFAULT_URL} -o ripgrep-14\\.0\\.3-x86_64-unknown-linux-musl\\.tar\\.gz && " +
                         "tar -xz && " +
                         "sudo cd ripgrep-14\\.0\\.3-x86_64-unknown-linux-musl && " +
                         "sudo cp rg /usr/local/bin/ && " +
                         "sudo rm -rf ripgrep-14\\.0\\.3-x86_64-unknown-linux-musl && " +
                         "cd - && " +
-                        "rm -rf /tmp/installer-[a-f0-9-]+"
+                        "rm -rf /tmp/installer-ripgrep"
         ))
     }
 

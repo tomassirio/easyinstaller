@@ -10,8 +10,8 @@ class DefaultStrategy(
         processBuilderFactory: ProcessBuilderFactory,
 ) : BaseStrategy(shellFormatter, processBuilderFactory), DownloadStrategy {
 
-    override fun install(command: String?) {
-        command?.let(::process)
+    override fun install(urlOrName: String?) {
+        urlOrName?.let(::process)
         ?: run { shellFormatter.printWarning("No default command found for this app")}
     }
 

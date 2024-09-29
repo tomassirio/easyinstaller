@@ -13,7 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -53,9 +57,9 @@ class AgInstallerTest {
 
         verify(shellFormatter).printInfo("Installing Ag...")
         verify(strategy).invoke(ArgumentMatchers.matches(
-                "mkdir -p /tmp/installer-[a-f0-9-]+ && " +
-                "cd /tmp/installer-[a-f0-9-]+ && " +
-                "curl -fsSL https://github\\.com/ggreer/the_silver_searcher/archive/refs/tags/2\\.2\\.0\\.tar\\.gz -o the_silver_searcher\\.tar\\.gz && " +
+                "mkdir -p /tmp/installer-ag && " +
+                "cd /tmp/installer-ag && " +
+                "curl -fsSL ${agInstaller.DEFAULT_URL} -o the_silver_searcher\\.tar\\.gz && " +
                 "tar -xzvf the_silver_searcher\\.tar\\.gz && " +
                 "sudo cd the_silver_searcher && " +
                 "sudo ./build.sh && " +
@@ -64,7 +68,7 @@ class AgInstallerTest {
                 "sudo rm -rf the_silver_searcher && " +
                 "sudo rm the_silver_searcher\\.tar\\.gz && " +
                 "cd - && " +
-                "rm -rf /tmp/installer-[a-f0-9-]+"))
+                "rm -rf /tmp/installer-ag"))
     }
 
     @Test

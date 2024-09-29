@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,15 @@ class RedisInstallerTest {
         redisInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Redis...")
-        verify(strategy).invoke(redisInstaller.DEFAULT_URL)
+        verify(strategy).invoke(    "mkdir -p /tmp/installer-redis && " +
+                "cd /tmp/installer-redis && " +
+                "curl -fsSL ${redisInstaller.DEFAULT_URL} -o redis-stable.tar.gz && " +
+                "tar -xz && " +
+                "sudo cd redis-stable && " +
+                "sudo make && " +
+                "sudo make install && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-redis")
     }
 
     @Test

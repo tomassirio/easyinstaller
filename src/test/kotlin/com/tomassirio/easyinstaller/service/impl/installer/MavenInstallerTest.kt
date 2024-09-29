@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,15 @@ class MavenInstallerTest {
         mavenInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Maven...")
-        verify(strategy).invoke(mavenInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-maven && " +
+                "cd /tmp/installer-maven && " +
+                "curl -fsSL https://downloads.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz -o apache-maven.tar.gz && " +
+                "tar -xz && " +
+                "sudo mv apache-maven /opt/maven && " +
+                "echo export PATH=\$PATH:/opt/maven/bin >> ~/.bashrc && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-maven"
+        )
     }
 
     @Test

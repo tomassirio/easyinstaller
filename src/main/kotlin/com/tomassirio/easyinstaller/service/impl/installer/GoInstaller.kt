@@ -1,5 +1,6 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
+import com.tomassirio.easyinstaller.config.helper.OSArchUtil
 import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.service.annotation.ProgrammingLanguageTool
 import com.tomassirio.easyinstaller.service.impl.installer.builder.DefaultCommandBuilder
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Service
 @Service
 @ProgrammingLanguageTool
 class GoInstaller(
-    private val shellFormatter: ShellFormatter,
-    private val downloadStrategyContext: DownloadStrategyContext
-): InstallableApplication {
+        private val shellFormatter: ShellFormatter,
+        private val downloadStrategyContext: DownloadStrategyContext,
+        private val osArchUtil: OSArchUtil
+) : InstallableApplication {
 
     @Value("\${url.default.go}")
     lateinit var DEFAULT_URL: String
@@ -28,11 +30,26 @@ class GoInstaller(
     override fun name() = "Go"
 
     private fun createDefaultCommand(): String {
-        return DefaultCommandBuilder(name(), DEFAULT_URL)
-                .setFileName("go1.17.2.tar.gz")
+        val os = osArchUtil.getOS()
+            .replace("MacOSX", "darwin")
+            .replace("Linux", "linux")
+            .replace("Windows", "windows")
+        val arch = osArchUtil.getArch()
+            .replace("aarch64", "arm64")
+
+        val ext = if (os == "windows") "zip" else "tar.gz"
+
+        if (os == "Unknown" || arch == "Unknown") {
+            throw IllegalStateException("Unsupported OS or architecture")
+        }
+
+        val url = DEFAULT_URL.replace("{OS}", os).replace("{ARCH}", arch).replace("{EXT}", ext)
+
+        return DefaultCommandBuilder(name(), url)
+                .setFileName("go.$ext")
                 .setExtractCommand("tar -C /usr/local -xz")
                 .addPostExtractCommands("echo export PATH=\$PATH:/usr/local/go/bin >> ~/.bashrc")
-                .addCleanupCommands("rm go1.17.2.tar.gz")
+                .addCleanupCommands("rm go.$ext")
                 .useSudo()
                 .build()
     }

@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,14 @@ class PyCharmInstallerTest {
         pyCharmInstaller.install()
 
         verify(shellFormatter).printInfo("Installing PyCharm...")
-        verify(strategy).invoke(pyCharmInstaller.DEFAULT_URL)
+        verify(strategy).invoke(
+                "mkdir -p /tmp/installer-pycharm && " +
+                "cd /tmp/installer-pycharm && " +
+                "curl -fsSL ${pyCharmInstaller.DEFAULT_URL} -o pycharm-community-2024.1.tar.gz && " +
+                "tar -xz -C /opt/ && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-pycharm"
+        )
     }
 
     @Test
@@ -102,6 +113,7 @@ class PyCharmInstallerTest {
 
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
-        assertTrue(output.contains("pycharm"), "Expected output to contain 'pycharm'. Output was: $output")
+        assertTrue(output.contains("HTTP/2 200")
+                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
     }
 }

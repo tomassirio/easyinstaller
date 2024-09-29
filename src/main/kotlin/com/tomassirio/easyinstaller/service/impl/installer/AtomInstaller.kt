@@ -21,23 +21,16 @@ class AtomInstaller(
     override fun install() {
         shellFormatter.printInfo("Installing ${name()}...")
         val strategy = downloadStrategyContext.getCurrentStrategy()
-        val command = if (downloadStrategyContext.isDefault()) DEFAULT_URL else name().lowercase()
+        val command = if (downloadStrategyContext.isDefault()) createDefaultCommand() else name().lowercase()
         strategy(command)
     }
 
     override fun name() = "Atom"
 
     private fun createDefaultCommand(): String {
+        //TODO: Atom was moved. Need to find a new way of downloading
         return DefaultCommandBuilder(name(), DEFAULT_URL)
-                .setFileName("apt_1.9.3_amd64.deb")
-                .addPostExtractCommands(
-                        "cp /usr/bin/apt /usr/bin/apt.backup",
-                        "dpkg -i apt_1.9.3_amd64.deb",
-                        "apt-get install -f"
-                )
-                .addCleanupCommands(
-                        "rm apt_1.9.3_amd64.deb"
-                )
+                .setFileName("atom.tar.gz")
                 .useSudo()
                 .build()
     }

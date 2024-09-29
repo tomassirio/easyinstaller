@@ -11,7 +11,7 @@ class DefaultCommandBuilder(
     private var extractCommand: String? = null
     private var postExtractCommands: List<String> = emptyList()
     private var cleanupCommands: List<String> = emptyList()
-    private var workingDirectory: String = "/tmp/installer-${name.lowercase()}"
+    private var workingDirectory: String = "/tmp/installer-${name.lowercase().replace(" ", "-")}"
     private var sudo: Boolean = false
     private var verifyChecksum: Boolean = false
     private var checksumUrl: String? = null
@@ -95,7 +95,9 @@ class DefaultCommandBuilder(
                 append(buildChecksumVerification())
             }
 
-            append("$actualExtractCommand && ")
+            if (actualExtractCommand != "") {
+                append("$actualExtractCommand && ")
+            }
             postExtractCommands.forEach { append("${it.withSudoIfNeeded()} && ") }
             cleanupCommands.forEach { append("${it.withSudoIfNeeded()} && ") }
             append("cd - && ")
@@ -108,6 +110,9 @@ class DefaultCommandBuilder(
     }
 
     private fun guessExtractCommand(fileName: String): String {
+        if (!fileName.contains(".")) {
+            return ""
+        }
         return when {
             fileName.endsWith(".tar.gz") || fileName.endsWith(".tgz") -> "tar -xzvf $fileName"
             fileName.endsWith(".tar.bz2") -> "tar -xjvf $fileName"
@@ -115,6 +120,7 @@ class DefaultCommandBuilder(
             fileName.endsWith(".zip") -> "unzip $fileName"
             fileName.endsWith(".deb") -> "sudo dpkg -i $fileName"
             fileName.endsWith(".rpm") -> "sudo rpm -i $fileName"
+            fileName.endsWith(".gpg") -> "gpg --import $fileName"
             else -> throw IllegalArgumentException("Unable to determine extract command for $fileName")
         }
     }

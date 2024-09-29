@@ -1,5 +1,6 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
+import com.tomassirio.easyinstaller.config.helper.OSArchUtil
 import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.service.annotation.IdesAndTextEditor
 import com.tomassirio.easyinstaller.service.impl.installer.builder.DefaultCommandBuilder
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Service
 @IdesAndTextEditor
 class SublimeInstaller(
         private val shellFormatter: ShellFormatter,
-        private val downloadStrategyContext: DownloadStrategyContext
+        private val downloadStrategyContext: DownloadStrategyContext,
+        private val osArchUtil: OSArchUtil
 ) : InstallableApplication {
 
     @Value("\${url.default.sublime}")
@@ -28,18 +30,18 @@ class SublimeInstaller(
     override fun name() = "Sublime"
 
     private fun createDefaultCommand(): String {
-        return DefaultCommandBuilder(name(), DEFAULT_URL)
-                .setFileName("sublime_text_3")
-                .setExtractCommand(" tar -xz")
-                .addPostExtractCommands(
-                        "cd sublime_text_3",
-                        "sudo mv sublime_text /usr/bin/sublime",
-                        "sudo ln -s /usr/bin/sublime /usr/bin/subl"
-                )
-                .addCleanupCommands(
-                        "cd ..",
-                        "rm -rf sublime_text_3"
-                )
+        val os = osArchUtil.getOS()
+
+        val finalURL = when (os) {
+            "MacOSX" ->  DEFAULT_URL.replace("{OS}", "mac")
+            "Windows" -> DEFAULT_URL.replace("{OS}", "winx-64")
+            else -> throw IllegalStateException("OS not supported")
+        }
+
+        return DefaultCommandBuilder(name(), finalURL)
+                .setFileName("sublime_text")
+                .setExtractCommand("unzip sublime_text.zip")
+                .addPostExtractCommands("sudo mv sublime_text /usr/bin/sublime")
                 .useSudo()
                 .build()
     }

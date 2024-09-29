@@ -23,7 +23,7 @@ import org.springframework.core.env.Environment
 import java.util.stream.Stream
 
 
-private const val MAC_PROFILE = "mac"
+private const val MAC_PROFILE = "MacOSX"
 private const val WINDOWS_PROFILE = "windows"
 private const val LINUX_PROFILE = "linux"
 

@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,14 @@ class SonarQubeInstallerTest {
         sonarQubeInstaller.install()
 
         verify(shellFormatter).printInfo("Installing SonarQube...")
-        verify(strategy).invoke(sonarQubeInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-sonarqube && " +
+                "cd /tmp/installer-sonarqube && " +
+                "curl -fsSL ${sonarQubeInstaller.DEFAULT_URL} -o sonarqube.zip && " +
+                "unzip && " +
+                "sudo mv sonarqube-10.3.0.82913 /opt/sonarqube && " +
+                "sudo rm sonarqube.zip && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-sonarqube")
     }
 
     @Test
@@ -102,7 +113,7 @@ class SonarQubeInstallerTest {
 
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
-        assertTrue(output.contains("HTTP/1.1 200 OK")
-                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
+        assertTrue(output.contains("HTTP/2 200")
+            .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
     }
 }

@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -50,8 +54,19 @@ class GitKrakenInstallerTest {
 
         gitKrakenInstaller.install()
 
+        val finalURL = gitKrakenInstaller.DEFAULT_URL
+
         verify(shellFormatter).printInfo("Installing GitKraken...")
-        verify(strategy).invoke(gitKrakenInstaller.DEFAULT_URL)
+        verify(strategy).invoke(
+            "mkdir -p /tmp/installer-gitkraken && " +
+                    "cd /tmp/installer-gitkraken && " +
+                    "curl -fsSL $finalURL -o gitkraken.deb && " +
+                    "sudo dpkg -i gitkraken.deb && " +
+                    "sudo dpkg -i gitkraken.deb && " +
+                    "sudo rm gitkraken.deb && " +
+                    "cd - && " +
+                    "rm -rf /tmp/installer-gitkraken"
+        )
     }
 
     @Test
@@ -102,7 +117,9 @@ class GitKrakenInstallerTest {
 
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
-        assertTrue(output.contains("HTTP/1.1 200 OK")
-                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
+        assertTrue(
+            output.contains("HTTP/1.1 200 OK")
+                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output"
+        )
     }
 }

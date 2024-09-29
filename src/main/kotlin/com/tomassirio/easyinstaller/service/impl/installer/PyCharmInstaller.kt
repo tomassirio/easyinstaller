@@ -25,7 +25,7 @@ class PyCharmInstaller(
         strategy(command)
     }
 
-    override fun name() = "Pycharm"
+    override fun name() = "PyCharm"
 
     private fun createDefaultCommand(): String {
         return DefaultCommandBuilder(name(), DEFAULT_URL)

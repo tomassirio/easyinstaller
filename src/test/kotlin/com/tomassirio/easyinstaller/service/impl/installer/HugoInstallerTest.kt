@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,15 @@ class HugoInstallerTest {
         hugoInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Hugo...")
-        verify(strategy).invoke(hugoInstaller.DEFAULT_URL)
+        verify(strategy).invoke(    "mkdir -p /tmp/installer-hugo && " +
+                "cd /tmp/installer-hugo && " +
+                "curl -fsSL ${hugoInstaller.DEFAULT_URL} -o hugo.tar.gz && " +
+                "tar -xzvf && " +
+                "cd hugo && " +
+                "sudo mv hugo /usr/local/bin/ && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-hugo"
+        )
     }
 
     @Test

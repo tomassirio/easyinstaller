@@ -9,7 +9,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
@@ -32,8 +36,8 @@ class SynchtingInstallerTest {
 
         synchtingInstaller.install()
 
-        verify(shellFormatter).printInfo("Installing Synchting...")
-        verify(strategy).install("synchting")
+        verify(shellFormatter).printInfo("Installing Syncthing...")
+        verify(strategy).install("syncthing")
     }
 
     @Test
@@ -46,6 +50,6 @@ class SynchtingInstallerTest {
             synchtingInstaller.install()
         }
 
-        verify(shellFormatter).printInfo("Installing Synchting...")
+        verify(shellFormatter).printInfo("Installing Syncthing...")
     }
 }

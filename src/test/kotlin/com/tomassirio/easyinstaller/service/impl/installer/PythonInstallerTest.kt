@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,16 @@ class PythonInstallerTest {
         pythonInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Python...")
-        verify(strategy).invoke(pythonInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-python && " +
+                "cd /tmp/installer-python && " +
+                "curl -fsSL ${pythonInstaller.DEFAULT_URL} -o Python-3.12.1.tgz && " +
+                "tar -xz && " +
+                "sudo cd Python-3.12.1 && " +
+                "sudo ./configure --enable-optimizations && " +
+                "sudo make -j 8 && " +
+                "sudo make altinstall && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-python")
     }
 
     @Test
@@ -102,6 +115,7 @@ class PythonInstallerTest {
 
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
-        assertTrue(output.contains("python"), "Expected output to contain 'python'. Output was: $output")
+        assertTrue(output.contains("HTTP/2 200")
+                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
     }
 }

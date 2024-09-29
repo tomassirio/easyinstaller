@@ -1,6 +1,18 @@
 package com.tomassirio.easyinstaller.command
 
-import com.tomassirio.easyinstaller.command.step.*
+import com.tomassirio.easyinstaller.command.step.BackupSyncToolStep
+import com.tomassirio.easyinstaller.command.step.BuildAndCiCdToolStep
+import com.tomassirio.easyinstaller.command.step.CloudCliToolStep
+import com.tomassirio.easyinstaller.command.step.CommandLineToolStep
+import com.tomassirio.easyinstaller.command.step.CommunicationToolStep
+import com.tomassirio.easyinstaller.command.step.ContainerAndVirtualizationToolStep
+import com.tomassirio.easyinstaller.command.step.DatabaseToolStep
+import com.tomassirio.easyinstaller.command.step.DocumentationToolStep
+import com.tomassirio.easyinstaller.command.step.PackageManagerStep
+import com.tomassirio.easyinstaller.command.step.ProgrammingLanguageToolStep
+import com.tomassirio.easyinstaller.command.step.SecurityToolStep
+import com.tomassirio.easyinstaller.command.step.ShellAndTerminalManagerStep
+import com.tomassirio.easyinstaller.command.step.VersionControlSystemStep
 import com.tomassirio.easyinstaller.service.ApplicationInstallerService
 import com.tomassirio.easyinstaller.style.ShellFormatter
 import org.springframework.shell.command.annotation.Command

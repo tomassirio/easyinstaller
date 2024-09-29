@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,15 @@ class AwsCliInstallerTest {
         awsCliInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Aws...")
-        verify(strategy).invoke(awsCliInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-aws && " +
+                "cd /tmp/installer-aws && " +
+                "curl -fsSL ${awsCliInstaller.DEFAULT_URL} -o awscliv2.zip && " +
+                "unzip awscliv2.zip && " +
+                "sudo unzip awscliv2.zip && " +
+                "sudo ./aws/install && " +
+                "sudo rm awscliv2.zip && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-aws")
     }
 
     @Test

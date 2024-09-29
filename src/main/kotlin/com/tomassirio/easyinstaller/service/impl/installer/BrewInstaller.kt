@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @PackageManager
-@Profile("mac")
+@Profile("MacOSX")
 class BrewInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext

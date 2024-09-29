@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,13 @@ class EclipseInstallerTest {
         eclipseInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Eclipse...")
-        verify(strategy).invoke(eclipseInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-eclipse && " +
+                "cd /tmp/installer-eclipse && " +
+                "curl -fsSL ${eclipseInstaller.DEFAULT_URL} -o eclipse-java-2024-03-R-linux-gtk-x86_64.tar.gz && " +
+                "tar -xzvf eclipse-java-2024-03-R-linux-gtk-x86_64.tar.gz -C /opt/ && " +
+                "sudo rm eclipse-java-2024-03-R-linux-gtk-x86_64.tar.gz && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-eclipse")
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
+import com.tomassirio.easyinstaller.config.helper.OSArchUtil
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.BrewStrategy
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategy
 import com.tomassirio.easyinstaller.service.impl.installer.strategy.DownloadStrategyContext
@@ -10,9 +11,15 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -27,6 +34,9 @@ class DockerComposeInstallerTest {
 
     @Mock
     private lateinit var downloadStrategyContext: DownloadStrategyContext
+
+    @Mock
+    private lateinit var osArchUtil: OSArchUtil
 
     @InjectMocks
     private lateinit var dockerComposeInstaller: DockerComposeInstaller
@@ -47,11 +57,24 @@ class DockerComposeInstallerTest {
         val strategy: (String?) -> Unit = mock()
         `when`(downloadStrategyContext.getCurrentStrategy()).thenReturn(strategy)
         `when`(downloadStrategyContext.isDefault()).thenReturn(true)
+        `when`(osArchUtil.getOS()).thenReturn("MacOSX")
+        `when`(osArchUtil.getArch()).thenReturn("aarch64")
+
+        val finalURL = dockerComposeInstaller.DEFAULT_URL
+            .replace("{OS}", "darwin")
+            .replace("{ARCH}", "aarch64")
 
         dockerComposeInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Docker Compose...")
-        verify(strategy).invoke(dockerComposeInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-docker-compose && " +
+                "cd /tmp/installer-docker-compose && " +
+                "curl -fsSL $finalURL -o docker-compose && " +
+                "sudo mkdir -p /usr/local/lib/docker/cli-plugins && " +
+                "sudo mv docker-compose /usr/local/lib/docker/cli-plugins && " +
+                "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-docker-compose")
     }
 
     @Test
@@ -76,13 +99,22 @@ class DockerComposeInstallerTest {
             dockerComposeInstaller.install()
         }
 
-        verify(shellFormatter).printInfo("Installing DockerCompose...")
+        verify(shellFormatter).printInfo("Installing Docker Compose...")
     }
 
-    @Test
-    fun `test default curl URL is valid`() {
+    @ParameterizedTest
+    @MethodSource("osArchExtProvider")
+    fun `test default curl URL is valid`(os: String, arch: String, ext: String) {
+        var finalURL = dockerComposeInstaller.DEFAULT_URL
+            .replace("{OS}", os)
+            .replace("{ARCH}", arch)
+
+        if (os == "windows") {
+            finalURL = finalURL.plus(ext)
+        }
+
         // Retrieve the default command automatically
-        val modifiedCommand = "curl --head ${dockerComposeInstaller.DEFAULT_URL}"
+        val modifiedCommand = "curl --head $finalURL"
         val command = arrayOf("/bin/bash", "-c", modifiedCommand)
 
         // Start the process
@@ -104,5 +136,17 @@ class DockerComposeInstallerTest {
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
         assertTrue(output.contains("HTTP/1.1 200 OK")
                 .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
+    }
+
+    companion object {
+        @JvmStatic
+        fun osArchExtProvider() = listOf(
+            arrayOf("darwin", "aarch64", ""),
+            arrayOf("darwin", "x86_64", ""),
+            arrayOf("linux", "aarch64", ""),
+            arrayOf("linux", "x86_64", ""),
+            arrayOf("windows", "aarch64", ".exe"),
+            arrayOf("windows", "x86_64", ".exe")
+        )
     }
 }

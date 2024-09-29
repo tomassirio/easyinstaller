@@ -1,5 +1,6 @@
 package com.tomassirio.easyinstaller.service.impl.installer
 
+import com.tomassirio.easyinstaller.config.helper.OSArchUtil
 import com.tomassirio.easyinstaller.service.InstallableApplication
 import com.tomassirio.easyinstaller.service.annotation.IdesAndTextEditor
 import com.tomassirio.easyinstaller.service.impl.installer.builder.DefaultCommandBuilder
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Service
 @Service
 @IdesAndTextEditor
 class VsCodeInstaller(
-    private val shellFormatter: ShellFormatter,
-    private val downloadStrategyContext: DownloadStrategyContext
-): InstallableApplication {
+        private val shellFormatter: ShellFormatter,
+        private val downloadStrategyContext: DownloadStrategyContext,
+        private val osArchUtil: OSArchUtil
+) : InstallableApplication {
 
     @Value("\${url.default.vscode}")
     lateinit var DEFAULT_URL: String
@@ -28,9 +30,20 @@ class VsCodeInstaller(
     override fun name() = "VsCode"
 
     private fun createDefaultCommand(): String {
-        return DefaultCommandBuilder(name(), DEFAULT_URL)
+        val os = osArchUtil.getOS()
+        val arch = osArchUtil.getArch()
+                .replace("x86_64", "x64")
+
+        val finalURL = when (os) {
+            "MacOSX" -> DEFAULT_URL.replace("{OS}", "darwin").replace("{ARCH}", arch)
+            "Linux" -> DEFAULT_URL.replace("{OS}", "alpine").replace("{ARCH}", arch)
+            "Windows" -> DEFAULT_URL.replace("{OS}", "win32").replace("{ARCH}", arch)
+            else -> throw IllegalArgumentException("Unsupported OS")
+        }
+
+        return DefaultCommandBuilder(name(), finalURL)
                 .setFileName("vscode")
-                .setExtractCommand("tar -xz")
+                .setExtractCommand("unzip")
                 .addPostExtractCommands(
                         "cd vscode",
                         "./configure",

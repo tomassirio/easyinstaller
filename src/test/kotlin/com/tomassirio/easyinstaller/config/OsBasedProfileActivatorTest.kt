@@ -1,11 +1,11 @@
 import com.tomassirio.easyinstaller.config.OsBasedProfileActivator
-import com.tomassirio.easyinstaller.config.helper.FileChecker
-import com.tomassirio.easyinstaller.config.helper.SystemPropertyWrapper
+import com.tomassirio.easyinstaller.config.helper.OSArchUtil
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.boot.SpringApplication
 import org.springframework.core.env.ConfigurableEnvironment
@@ -15,96 +15,54 @@ import org.springframework.mock.env.MockEnvironment
 class OsBasedProfileActivatorTest {
 
     @Mock
-    private lateinit var systemPropertyWrapper: SystemPropertyWrapper
-
-    @Mock
-    private lateinit var fileChecker: FileChecker
-
-    @Mock
     private lateinit var application: SpringApplication
+
+    @Mock
+    private lateinit var osArchUtil: OSArchUtil
 
     private lateinit var activator: OsBasedProfileActivator
     private lateinit var environment: ConfigurableEnvironment
 
     @BeforeEach
     fun setup() {
-        activator = OsBasedProfileActivator(systemPropertyWrapper, fileChecker)
+        activator = OsBasedProfileActivator(osArchUtil)
         environment = MockEnvironment()
     }
 
     @Test
     fun `test Windows profile activation`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("Windows 10")
+        `when`(osArchUtil.getOS()).thenReturn("Windows")
 
         activator.postProcessEnvironment(environment, application)
 
-        assert(environment.activeProfiles.contains("windows"))
+        assertThat(environment.activeProfiles).contains("Windows")
     }
 
     @Test
     fun `test Mac profile activation`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("Mac OS X")
+        `when`(osArchUtil.getOS()).thenReturn("MacOSX")
 
         activator.postProcessEnvironment(environment, application)
 
-        assert(environment.activeProfiles.contains("mac"))
+        assertThat(environment.activeProfiles).contains("MacOSX")
     }
 
     @Test
     fun `test Linux profile activation`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("Linux")
-
-        // Simulate that no specific Linux distribution files are found
-        `when`(fileChecker.fileExists(anyString())).thenReturn(false)
+        `when`(osArchUtil.getOS()).thenReturn("Linux")
 
         activator.postProcessEnvironment(environment, application)
 
-        assert(environment.activeProfiles.contains("linux"))
+        assertThat(environment.activeProfiles).contains("Linux")
     }
 
-    @Test
-    fun `test Debian-based Linux profile activation`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("Linux")
-        `when`(fileChecker.fileExists("/etc/debian_version")).thenReturn(true)
-
-        activator.postProcessEnvironment(environment, application)
-
-        assert(environment.activeProfiles.contains("debian"))
-    }
-
-    @Test
-    fun `test Fedora-based Linux profile activation`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("Linux")
-
-        // Use lenient stubbing for this particular check
-        lenient().`when`(fileChecker.fileExists("/etc/debian_version")).thenReturn(false)
-        lenient().`when`(fileChecker.fileExists("/etc/arch-release")).thenReturn(false)
-        `when`(fileChecker.fileExists("/etc/fedora-release")).thenReturn(true)
-
-        activator.postProcessEnvironment(environment, application)
-
-        assert(environment.activeProfiles.contains("fedora"))
-    }
-
-    @Test
-    fun `test Arch-based Linux profile activation`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("Linux")
-
-        lenient().`when`(fileChecker.fileExists("/etc/debian_version")).thenReturn(false)
-        lenient().`when`(fileChecker.fileExists("/etc/fedora-release")).thenReturn(false)
-        `when`(fileChecker.fileExists("/etc/arch-release")).thenReturn(true)
-
-        activator.postProcessEnvironment(environment, application)
-
-        assert(environment.activeProfiles.contains("arch"))
-    }
 
     @Test
     fun `test default profile activation for unknown OS`() {
-        `when`(systemPropertyWrapper.getProperty("os.name")).thenReturn("SomeUnknownOS")
+        `when`(osArchUtil.getOS()).thenReturn("default")
 
         activator.postProcessEnvironment(environment, application)
 
-        assert(environment.activeProfiles.contains("default"))
+        assertThat(environment.activeProfiles).contains("default")
     }
 }

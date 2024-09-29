@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,17 @@ class GpgInstallerTest {
         gpgInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Gpg...")
-        verify(strategy).invoke(gpgInstaller.DEFAULT_URL)
+        verify(strategy).invoke(    "mkdir -p /tmp/installer-gpg && " +
+                "cd /tmp/installer-gpg && " +
+                "curl -fsSL ${gpgInstaller.DEFAULT_URL} -o gnupg-2.4.4.tar.bz2 && " +
+                "tar -xj && " +
+                "cd gnupg-2.4.4 && " +
+                "./configure && " +
+                "make && " +
+                "sudo make install && " +
+                "sudo rm -rf gnupg-2.4.4 && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-gpg")
     }
 
     @Test

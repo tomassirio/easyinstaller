@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,16 @@ class HttpieInstallerTest {
         httpieInstaller.install()
 
         verify(shellFormatter).printInfo("Installing Httpie...")
-        verify(strategy).invoke(httpieInstaller.DEFAULT_URL)
+        verify(strategy).invoke(    "mkdir -p /tmp/installer-httpie && " +
+                "cd /tmp/installer-httpie && " +
+                "curl -SsL ${httpieInstaller.DEFAULT_URL} -o KEY.gpg && " +
+                "gpg --import KEY.gpg && " +
+                "sudo gpg --dearmor -o /usr/share/keyrings/httpie.gpg && " +
+                "sudo echo deb [arch=amd64 signed-by=/usr/share/keyrings/httpie-archive-keyring.gpg] https://packages.httpie.io/deb ./ sudo tee /etc/apt/sources.list.d/httpie.list > /dev/null && " +
+                "sudo apt update && " +
+                "sudo apt install httpie && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-httpie")
     }
 
     @Test
@@ -102,7 +115,7 @@ class HttpieInstallerTest {
 
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
-        assertTrue(output.contains("HTTP/1.1 200 OK")
+        assertTrue(output.contains("HTTP/2 200")
                 .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
     }
 }

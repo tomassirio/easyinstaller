@@ -29,9 +29,11 @@ class HttpieInstaller(
 
     private fun createDefaultCommand(): String {
         return DefaultCommandBuilder(name(), DEFAULT_URL)
+            .setCurlCommand("curl -SsL")
                 .addPostExtractCommands(
-                        "sudo gpg --dearmor -o /usr/share/keyrings/httpie-archive-keyring.gpg",
-                        "echo deb [arch=amd64 signed-by=/usr/share/keyrings/httpie-archive-keyring.gpg] https://packages.httpie.io/deb ./ | sudo tee /etc/apt/sources.list.d/httpie.list > /dev/null",
+                        "sudo gpg --dearmor -o /usr/share/keyrings/httpie.gpg",
+                        "echo deb [arch=amd64 signed-by=/usr/share/keyrings/httpie-archive-keyring.gpg] https://packages.httpie.io/deb ./" +
+                        " sudo tee /etc/apt/sources.list.d/httpie.list > /dev/null",
                         "sudo apt update",
                         "sudo apt install httpie"
                 )

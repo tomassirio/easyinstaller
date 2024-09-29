@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,7 @@ class SdkManagerInstallerTest {
         sdkManagerInstaller.install()
 
         verify(shellFormatter).printInfo("Installing SdkManager...")
-        verify(strategy).invoke(sdkManagerInstaller.DEFAULT_URL)
+        verify(strategy).invoke("curl -fsSL ${sdkManagerInstaller.DEFAULT_URL} | sudo bash")
     }
 
     @Test
@@ -63,7 +67,7 @@ class SdkManagerInstallerTest {
         sdkManagerInstaller.install()
 
         verify(shellFormatter).printInfo("Installing SdkManager...")
-        verify(strategy).install("sdkmanager")
+        verify(strategy).install("sdkman")
     }
 
     @Test

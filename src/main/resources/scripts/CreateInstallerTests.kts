@@ -1,7 +1,7 @@
 #!/usr/bin/env kotlin
 
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 // List of installers
 val installers = listOf(

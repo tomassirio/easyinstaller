@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @ShellAndTerminalManager
-@Profile("mac", "Linux")
+@Profile("MacOSX", "Linux")
 class FishInstaller(
     private val shellFormatter: ShellFormatter,
     private val downloadStrategyContext: DownloadStrategyContext

@@ -12,7 +12,11 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import java.io.FileInputStream
@@ -51,7 +55,16 @@ class PostgreSqlInstallerTest {
         postgreSqlInstaller.install()
 
         verify(shellFormatter).printInfo("Installing PostgreSql...")
-        verify(strategy).invoke(postgreSqlInstaller.DEFAULT_URL)
+        verify(strategy).invoke("mkdir -p /tmp/installer-postgresql && " +
+                "cd /tmp/installer-postgresql && " +
+                "curl -fsSL ${postgreSqlInstaller.DEFAULT_URL} -o postgresql-16.2.tar.gz && " +
+                "tar -xz && " +
+                "sudo cd postgresql-16.2 && " +
+                "sudo ./configure && " +
+                "sudo make && " +
+                "sudo make install && " +
+                "cd - && " +
+                "rm -rf /tmp/installer-postgresql")
     }
 
     @Test
