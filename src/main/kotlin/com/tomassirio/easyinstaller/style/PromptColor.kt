@@ -9,7 +9,8 @@ enum class PromptColor(private val value: Int) {
     MAGENTA(5),
     CYAN(6),
     WHITE(7),
-    BRIGHT(8);
+    BRIGHT(8),
+    LIGHT_PINK(9);
 
     fun toJlineAttributedStyle(): Int {
         return this.value
