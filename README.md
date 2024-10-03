@@ -222,7 +222,7 @@ There's a few entities easily extensible in Easy Installer:
         │   │       │   ├── annotation
         │   │       │   ├── impl
         │   │       │   │   ├── installer
-        │   │       │   │   │   ├── strategy
+        │   │       └───└───└────└── strategy
         ├── test
         └── resources
             └── application.properties
@@ -336,11 +336,3 @@ Here are several ways you can contribute:
    </a>
 </p>
 </details>
-
----
-
-##  Acknowledgments
-
-- List any resources, contributors, inspiration, etc. here.
-
----
