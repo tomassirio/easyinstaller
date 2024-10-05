@@ -116,6 +116,7 @@ class PostgreSqlInstallerTest {
         // Assert the process exited successfully and produced expected output
         assertEquals(0, exitCode, "Process failed with exit code $exitCode and error: $errorOutput")
         assertTrue(output.contains("HTTP/1.1 200 OK")
-                .or(output.contains("HTTP/2 302")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
+                .or(output.contains("HTTP/2 302"))
+                .or(output.contains("HTTP/2 200")), "Expected output to contain 'HTTP/1.1 200 OK'. Output was: $output")
     }
 }
